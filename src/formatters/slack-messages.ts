@@ -1,4 +1,4 @@
-import type { Block } from '@slack/bolt';
+import type { Block, KnownBlock } from '@slack/bolt';
 import type { PRHealthScore } from '../metrics/pr-health.js';
 import type { SprintVelocity } from '../metrics/sprint-velocity.js';
 import type { Anomaly } from '../metrics/anomaly-detector.js';
@@ -26,9 +26,9 @@ export function formatDailySummary(
       text: `🚀 Sprint Health Report - Day ${dayOfSprint}/${sprintLength}`,
       emoji: true,
     },
-  });
+  } as KnownBlock);
 
-  blocks.push({ type: 'divider' });
+  blocks.push({ type: 'divider' } as KnownBlock);
 
   // Overall Health Score
   const healthEmoji = prHealth.score >= 80 ? '🟢' : prHealth.score >= 60 ? '🟡' : '🔴';
@@ -38,7 +38,7 @@ export function formatDailySummary(
       type: 'mrkdwn',
       text: `📊 *Overall Health:* ${prHealth.score}/100 ${healthEmoji}`,
     },
-  });
+  } as KnownBlock);
 
   // Sprint Metrics (if available)
   if (sprintData && velocity) {
@@ -62,7 +62,7 @@ export function formatDailySummary(
           text: `📈 *Velocity:* ${velocity.completionPercentage.toFixed(1)}% complete`,
         },
       ],
-    });
+    } as KnownBlock);
   }
 
   // PR Summary
@@ -86,21 +86,21 @@ export function formatDailySummary(
         text: `⏱️ *Avg Age:* ${prSummary.averageAge} days`,
       },
     ],
-  });
+  } as KnownBlock);
 
   // Critical Issues
   const criticalIssues = prHealth.issues.filter((i) => i.severity === 'critical');
   const highIssues = prHealth.issues.filter((i) => i.severity === 'high');
 
   if (criticalIssues.length > 0 || highIssues.length > 0) {
-    blocks.push({ type: 'divider' });
+    blocks.push({ type: 'divider' } as KnownBlock);
     blocks.push({
       type: 'section',
       text: {
         type: 'mrkdwn',
         text: '🔴 *ACTION NEEDED:*',
       },
-    });
+    } as KnownBlock);
 
     const actionItems: string[] = [];
     if (criticalIssues.length > 0) {
@@ -119,20 +119,20 @@ export function formatDailySummary(
         type: 'mrkdwn',
         text: actionItems.join('\n'),
       },
-    });
+    } as KnownBlock);
   }
 
   // Top Issues List
   const topIssues = prHealth.issues.slice(0, 5);
   if (topIssues.length > 0) {
-    blocks.push({ type: 'divider' });
+    blocks.push({ type: 'divider' } as KnownBlock);
     blocks.push({
       type: 'section',
       text: {
         type: 'mrkdwn',
         text: '*Top Issues:*',
       },
-    });
+    } as KnownBlock);
 
     const issuesList = topIssues
       .map((issue) => {
@@ -147,7 +147,7 @@ export function formatDailySummary(
         type: 'mrkdwn',
         text: issuesList,
       },
-    });
+    } as KnownBlock);
   }
 
   return blocks;
@@ -172,7 +172,7 @@ export function formatAnomalyAlert(anomaly: Anomaly): Block[] {
       type: 'mrkdwn',
       text: `${severityEmoji[anomaly.severity]} *${anomaly.title}*\n\n${anomaly.description}`,
     },
-  });
+  } as KnownBlock);
 
   if (anomaly.url) {
     blocks.push({
@@ -188,7 +188,7 @@ export function formatAnomalyAlert(anomaly: Anomaly): Block[] {
           style: anomaly.severity === 'critical' ? 'danger' : undefined,
         },
       ],
-    });
+    } as KnownBlock);
   }
 
   return blocks;
@@ -208,7 +208,7 @@ export function formatBlockers(sprintData: UnifiedSprintData): Block[] {
         type: 'mrkdwn',
         text: '✅ *No blockers found!*',
       },
-    });
+    } as KnownBlock);
     return blocks;
   }
 
@@ -219,7 +219,7 @@ export function formatBlockers(sprintData: UnifiedSprintData): Block[] {
       text: `🚫 Blockers (${blockedTickets.length})`,
       emoji: true,
     },
-  });
+  } as KnownBlock);
 
   for (const ticket of blockedTickets) {
     const ticketKey = 'key' in ticket ? ticket.key : ticket.identifier;
@@ -231,7 +231,7 @@ export function formatBlockers(sprintData: UnifiedSprintData): Block[] {
         type: 'mrkdwn',
         text: `• <${ticket.url}|${ticketKey}>: ${ticketTitle}`,
       },
-    });
+    } as KnownBlock);
   }
 
   return blocks;
@@ -250,7 +250,7 @@ export function formatPendingPRs(prs: Array<{ number: number; title: string; url
         type: 'mrkdwn',
         text: '✅ *No pending PRs!*',
       },
-    });
+    } as KnownBlock);
     return blocks;
   }
 
@@ -261,7 +261,7 @@ export function formatPendingPRs(prs: Array<{ number: number; title: string; url
       text: `📝 Pending PRs (${prs.length})`,
       emoji: true,
     },
-  });
+  } as KnownBlock);
 
   // Sort by age (oldest first)
   const sortedPRs = [...prs].sort((a, b) => b.ageInDays - a.ageInDays);
@@ -274,7 +274,7 @@ export function formatPendingPRs(prs: Array<{ number: number; title: string; url
         type: 'mrkdwn',
         text: `${ageText} <${pr.url}|PR #${pr.number}>: ${pr.title}`,
       },
-    });
+    } as KnownBlock);
   }
 
   if (prs.length > 10) {
@@ -284,7 +284,7 @@ export function formatPendingPRs(prs: Array<{ number: number; title: string; url
         type: 'mrkdwn',
         text: `_...and ${prs.length - 10} more_`,
       },
-    });
+    } as KnownBlock);
   }
 
   return blocks;
@@ -306,9 +306,9 @@ export function formatHealthCheck(
       text: '📊 Sprint Health Check',
       emoji: true,
     },
-  });
+  } as KnownBlock);
 
-  blocks.push({ type: 'divider' });
+  blocks.push({ type: 'divider' } as KnownBlock);
 
   const healthEmoji = prHealth.score >= 80 ? '🟢' : prHealth.score >= 60 ? '🟡' : '🔴';
   blocks.push({
@@ -317,7 +317,7 @@ export function formatHealthCheck(
       type: 'mrkdwn',
       text: `*PR Health Score:* ${prHealth.score}/100 ${healthEmoji}`,
     },
-  });
+  } as KnownBlock);
 
   if (velocity) {
     const velocityEmoji = velocity.velocityScore >= 80 ? '🟢' : velocity.velocityScore >= 60 ? '🟡' : '🔴';
@@ -327,7 +327,7 @@ export function formatHealthCheck(
         type: 'mrkdwn',
         text: `*Sprint Velocity:* ${velocity.velocityScore}/100 ${velocityEmoji}\n${velocity.completionPercentage.toFixed(1)}% complete (${velocity.daysRemaining} days remaining)`,
       },
-    });
+    } as KnownBlock);
   }
 
   return blocks;

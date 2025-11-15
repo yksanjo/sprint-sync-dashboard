@@ -143,7 +143,7 @@ export class GitHubClient {
       `;
 
       try {
-        const response = await this.graphql<{
+        type GraphQLResponse = {
           repository: {
             pullRequests: {
               pageInfo: {
@@ -198,7 +198,9 @@ export class GitHubClient {
               }>;
             };
           };
-        }>(query, {
+        };
+
+        const response: GraphQLResponse = await this.graphql(query, {
           owner,
           repo,
           cursor,

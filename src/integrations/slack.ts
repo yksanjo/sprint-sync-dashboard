@@ -1,5 +1,4 @@
 import { App } from '@slack/bolt';
-import type { Block } from '@slack/bolt';
 import type { PRHealthScore } from '../metrics/pr-health.js';
 import type { SprintVelocity } from '../metrics/sprint-velocity.js';
 import type { Anomaly } from '../metrics/anomaly-detector.js';
@@ -36,7 +35,7 @@ export class SlackClient {
    */
   private setupCommands(): void {
     // /sprint-health command
-    this.app.command('/sprint-health', async ({ command, ack, respond }) => {
+    this.app.command('/sprint-health', async ({ ack, respond }) => {
       await ack();
       // This will be handled by the main application
       // For now, just acknowledge
@@ -47,7 +46,7 @@ export class SlackClient {
     });
 
     // /sprint-blockers command
-    this.app.command('/sprint-blockers', async ({ command, ack, respond }) => {
+    this.app.command('/sprint-blockers', async ({ ack, respond }) => {
       await ack();
       await respond({
         text: 'Fetching blockers... This feature requires additional setup.',
@@ -56,7 +55,7 @@ export class SlackClient {
     });
 
     // /sprint-prs command
-    this.app.command('/sprint-prs', async ({ command, ack, respond }) => {
+    this.app.command('/sprint-prs', async ({ ack, respond }) => {
       await ack();
       await respond({
         text: 'Fetching pending PRs... This feature requires additional setup.',
@@ -146,7 +145,7 @@ export class SlackClient {
     try {
       const blocks = formatHealthCheck(prHealth, velocity);
 
-      await this.app.client.web.chat.update({
+      await this.app.client.chat.update({
         channel: this.channelId,
         ts: responseUrl, // This would need to be the timestamp from the command
         blocks,
