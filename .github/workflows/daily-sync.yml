@@ -1,0 +1,65 @@
+name: Daily Sprint Sync
+
+on:
+  schedule:
+    # Run daily at 9 AM in the configured timezone
+    # Note: GitHub Actions uses UTC, so adjust accordingly
+    # For America/New_York (EST/EDT), 9 AM = 14:00 UTC (EST) or 13:00 UTC (EDT)
+    - cron: '0 14 * * *'  # 9 AM EST / 10 AM EDT
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: ./sprint-sync-dashboard
+
+      - name: Build
+        run: npm run build
+        working-directory: ./sprint-sync-dashboard
+
+      - name: Run Sprint Sync
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_ORG: ${{ secrets.GITHUB_ORG }}
+          GITHUB_REPOS: ${{ secrets.GITHUB_REPOS }}
+          JIRA_URL: ${{ secrets.JIRA_URL }}
+          JIRA_EMAIL: ${{ secrets.JIRA_EMAIL }}
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+          JIRA_PROJECT_KEY: ${{ secrets.JIRA_PROJECT_KEY }}
+          LINEAR_API_KEY: ${{ secrets.LINEAR_API_KEY }}
+          LINEAR_TEAM_ID: ${{ secrets.LINEAR_TEAM_ID }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_SIGNING_SECRET: ${{ secrets.SLACK_SIGNING_SECRET }}
+          SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
+          TIMEZONE: ${{ secrets.TIMEZONE || 'America/New_York' }}
+          SPRINT_LENGTH_DAYS: ${{ secrets.SPRINT_LENGTH_DAYS || '10' }}
+          ALERT_THRESHOLD_DAYS: ${{ secrets.ALERT_THRESHOLD_DAYS || '3' }}
+        run: npm start
+        working-directory: ./sprint-sync-dashboard
+
+      - name: Notify on failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: 'Sprint Sync Dashboard - Daily sync failed',
+              body: 'The daily sprint sync workflow failed. Please check the workflow logs.',
+              labels: ['bug', 'sprint-sync']
+            });
+
