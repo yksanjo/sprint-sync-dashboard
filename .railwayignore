@@ -1,12 +1,12 @@
 node_modules
 dist
 .git
-.github
 .env
 *.log
 .DS_Store
 coverage
 *.tsbuildinfo
+tests
 README.md
 QUICKSTART.md
 PROMOTION.md
@@ -15,4 +15,3 @@ COST_ANALYSIS.md
 DEPLOYMENT.md
 RAILWAY_DEPLOY.md
 QUICK_DEPLOY.md
-tests

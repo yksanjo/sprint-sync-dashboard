@@ -5,17 +5,20 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
-RUN npm ci --only=production
+# Install ALL dependencies (needed for build)
+RUN npm ci
 
 # Copy source code
 COPY . .
 
-# Build TypeScript
+# Generate Prisma client
+RUN npx prisma generate
+
+# Build TypeScript and web UI
 RUN npm run build
 
 # Remove dev dependencies and source files
-RUN rm -rf src tsconfig.json node_modules
+RUN rm -rf src server web/src tsconfig.json prisma node_modules
 RUN npm ci --only=production
 
 # Create non-root user
@@ -24,9 +27,8 @@ RUN addgroup -g 1001 -S nodejs && \
 
 USER nodejs
 
-# Expose port (if needed for web UI in future)
+# Expose port
 EXPOSE 3000
 
 # Run the application
-CMD ["node", "dist/index.js"]
-
+CMD ["node", "dist/server/index.js"]
