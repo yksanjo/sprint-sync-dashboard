@@ -11,7 +11,8 @@ import { calculatePRHealthScore, getPRSummary } from './metrics/pr-health.js';
 import { calculateSprintVelocity } from './metrics/sprint-velocity.js';
 import { AnomalyDetector } from './metrics/anomaly-detector.js';
 import { differenceInDays } from 'date-fns';
-import prisma from '../server/db/index.js';
+import { PrismaClient } from '@prisma/client';
+const prisma = new PrismaClient();
 import type { UnifiedSprintData } from './metrics/sprint-velocity.js';
 
 /**

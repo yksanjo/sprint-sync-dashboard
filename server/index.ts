@@ -22,6 +22,20 @@ app.use('/api/auth', authRoutes);
 app.use('/api/configs', configRoutes);
 app.use('/api/subscription', subscriptionRoutes);
 
+// Worker endpoint (for manual triggers or cron)
+app.post('/api/worker/run', async (req, res) => {
+  try {
+    // Import and run worker
+    const { runWorker } = await import('../src/worker.js');
+    // Run in background
+    runWorker().catch(console.error);
+    res.json({ message: 'Worker started', timestamp: new Date().toISOString() });
+  } catch (error: any) {
+    console.error('Worker error:', error);
+    res.status(500).json({ error: 'Failed to start worker' });
+  }
+});
+
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });

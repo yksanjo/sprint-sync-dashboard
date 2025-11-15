@@ -79,7 +79,20 @@
 
 ## 🚀 Quick Start
 
-### Option 1: GitHub Actions (Recommended - Zero Hosting)
+### Option 1: Hosted SaaS (Recommended - Zero Setup!) ⭐
+
+**Deploy to Railway in 5 minutes:**
+
+1. **Click "Deploy on Railway"** button below
+2. **Add PostgreSQL database** in Railway
+3. **Set environment variables** (see [RAILWAY_DEPLOY.md](RAILWAY_DEPLOY.md))
+4. **Visit your app** and sign up!
+
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template)
+
+**Cost:** Free tier available! See [COST_ANALYSIS.md](COST_ANALYSIS.md)
+
+### Option 2: GitHub Actions (Self-Hosted)
 
 1. **Fork or clone this repository**
 2. **Add secrets** to your repository (Settings → Secrets and variables → Actions):
@@ -88,7 +101,7 @@
    - `JIRA_*` or `LINEAR_*` (optional)
 3. **The workflow runs daily at 9 AM** - that's it! 🎉
 
-### Option 2: Docker (Self-Hosted)
+### Option 3: Docker (Self-Hosted)
 
 ```bash
 git clone https://github.com/yksanjo/sprint-sync-dashboard.git
@@ -97,10 +110,6 @@ cp env.example .env
 # Edit .env with your credentials
 docker-compose up -d
 ```
-
-### Option 3: Cloud Hosting (Railway/Render)
-
-See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed deployment instructions.
 
 ### Option 4: Local Development
 
