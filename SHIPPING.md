@@ -111,6 +111,16 @@ Currently, users only see Slack messages. A web dashboard would:
 
 ## 💰 Monetization (Separate from Shipping)
 
+**See [COST_ANALYSIS.md](COST_ANALYSIS.md) for detailed hosting costs!**
+
+### Quick Cost Summary:
+- **Start Free:** $0-12/year (just domain cost)
+- **Small Scale:** $15-30/month (50-200 users)
+- **Growing:** $50-100/month (200-1000 users)
+- **Enterprise:** $200-500/month (1000+ users)
+
+You can start completely free and scale costs with revenue!
+
 If you want to add payment, here are options:
 
 ### Option 1: Freemium SaaS
