@@ -14,7 +14,6 @@
     "test": "vitest",
     "db:migrate": "prisma migrate dev",
     "db:generate": "prisma generate",
-    "postinstall": "prisma generate"
   },
   "keywords": [
     "sprint",

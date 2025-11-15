@@ -5,14 +5,15 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
+# Copy Prisma schema (needed for postinstall script)
+COPY prisma ./prisma
+
 # Install ALL dependencies (needed for build)
+# This will run postinstall which generates Prisma client
 RUN npm ci
 
-# Copy source code
+# Copy rest of source code
 COPY . .
-
-# Generate Prisma client
-RUN npx prisma generate
 
 # Build TypeScript and web UI
 RUN npm run build
