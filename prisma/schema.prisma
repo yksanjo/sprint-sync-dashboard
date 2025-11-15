@@ -1,0 +1,78 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  passwordHash  String
+  name          String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  // Subscription
+  plan          Plan     @default(FREE)
+  stripeCustomerId String? @unique
+  stripeSubscriptionId String? @unique
+  
+  // Configuration
+  configs       Config[]
+  
+  @@index([email])
+}
+
+model Config {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // GitHub
+  githubToken   String
+  githubOrg     String
+  githubRepos   String   // Comma-separated
+  
+  // Jira (optional)
+  jiraUrl       String?
+  jiraEmail     String?
+  jiraApiToken  String?
+  jiraProjectKey String?
+  
+  // Linear (optional)
+  linearApiKey  String?
+  linearTeamId  String?
+  
+  // Slack
+  slackBotToken String
+  slackSigningSecret String
+  slackChannelId String
+  
+  // Settings
+  timezone      String   @default("America/New_York")
+  sprintLengthDays Int   @default(10)
+  alertThresholdDays Int @default(3)
+  
+  // Status
+  isActive      Boolean  @default(true)
+  lastRunAt     DateTime?
+  nextRunAt     DateTime?
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  @@index([userId])
+}
+
+enum Plan {
+  FREE
+  PRO
+  TEAM
+}
+

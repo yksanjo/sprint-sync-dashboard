@@ -1,0 +1,15 @@
+[build]
+builder = "NIXPACKS"
+
+[deploy]
+startCommand = "npm start"
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 10
+
+# Environment variables (set these in Railway dashboard)
+# DATABASE_URL - PostgreSQL connection string (Railway auto-provides)
+# JWT_SECRET - Secret for JWT tokens
+# STRIPE_SECRET_KEY - Stripe secret key (optional)
+# STRIPE_WEBHOOK_SECRET - Stripe webhook secret (optional)
+# FRONTEND_URL - Your frontend URL (e.g., https://sprintsync.io)
+
