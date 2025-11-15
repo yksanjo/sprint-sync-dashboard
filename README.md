@@ -1,14 +1,57 @@
-# Sprint Sync Dashboard
+# 🚀 Sprint Sync Dashboard
 
-A developer productivity tool that aggregates sprint health metrics across GitHub, Jira/Linear, and Slack. Get daily summaries, real-time alerts, and interactive commands to keep your team on track.
+<div align="center">
 
-## Features
+![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue?logo=typescript)
+![Node.js](https://img.shields.io/badge/Node.js-20+-green?logo=node.js)
+![License](https://img.shields.io/badge/License-MIT-yellow)
+![GitHub Actions](https://img.shields.io/badge/GitHub%20Actions-Enabled-2088FF?logo=github-actions)
 
-- 📊 **PR Health Scoring**: Automated health scores based on PR age, reviews, CI/CD status, and activity
-- 🚀 **Sprint Velocity Tracking**: Monitor sprint progress, burndown rates, and completion percentages
-- 🔍 **Anomaly Detection**: Automatically detect stale PRs, blockers, overloaded developers, and at-risk sprints
-- 📱 **Slack Integration**: Daily summaries, real-time alerts, and interactive slash commands
-- 🔄 **GitHub Actions**: Automated daily syncs via GitHub Actions
+**A developer productivity tool that aggregates sprint health metrics across GitHub, Jira/Linear, and Slack**
+
+[Features](#-features) • [Quick Start](#-quick-start) • [Documentation](#-documentation) • [Contributing](#-contributing)
+
+</div>
+
+---
+
+> **Keep your team on track** with automated daily summaries, real-time alerts, and interactive Slack commands. Monitor PR health, sprint velocity, and detect anomalies before they become blockers.
+
+![Sprint Sync Dashboard](https://img.shields.io/badge/Status-Production%20Ready-success)
+
+## ✨ Features
+
+### 📊 PR Health Scoring
+- **Automated health scores (0-100)** based on PR age, reviews, CI/CD status, and activity
+- Track PR staleness, review response times, and unresolved comments
+- Identify PRs without reviewers or failed CI/CD checks
+
+### 🚀 Sprint Velocity Tracking
+- Monitor sprint progress with **burndown rates** and completion percentages
+- Track story points completed vs. planned
+- Detect scope creep and velocity drops
+
+### 🔍 Anomaly Detection
+- **Automatically detect** stale PRs (>5 days), blockers, and overloaded developers
+- Alert on sprint velocity drops and multiple simultaneous blockers
+- Identify tickets stuck in progress without updates
+
+### 📱 Slack Integration
+- **Daily summaries** posted automatically at 9 AM (configurable)
+- **Real-time alerts** for critical issues
+- **Interactive slash commands**: `/sprint-health`, `/sprint-blockers`, `/sprint-prs`
+- Beautiful Block Kit formatting with actionable insights
+
+### 🔄 GitHub Actions
+- **Zero-config deployment** - runs daily via GitHub Actions
+- Manual trigger support for on-demand reports
+- Automatic error notifications
+
+### 🔌 Multi-Platform Support
+- **GitHub** integration via GraphQL API
+- **Jira** REST API support
+- **Linear** GraphQL API support
+- Auto-detects which project management tool is configured
 
 ## Architecture
 
@@ -34,7 +77,22 @@ A developer productivity tool that aggregates sprint health metrics across GitHu
                     └───────────────────┘
 ```
 
-## Setup
+## 🚀 Quick Start
+
+### Option 1: GitHub Actions (Recommended)
+
+1. **Fork or clone this repository**
+2. **Add secrets** to your repository (Settings → Secrets and variables → Actions):
+   - `GITHUB_TOKEN`, `GITHUB_ORG`, `GITHUB_REPOS`
+   - `SLACK_BOT_TOKEN`, `SLACK_SIGNING_SECRET`, `SLACK_CHANNEL_ID`
+   - `JIRA_*` or `LINEAR_*` (optional)
+3. **The workflow runs daily at 9 AM** - that's it! 🎉
+
+### Option 2: Local Development
+
+See [QUICKSTART.md](QUICKSTART.md) for detailed local setup instructions.
+
+## 📋 Setup
 
 ### Prerequisites
 
@@ -149,7 +207,9 @@ Go to Settings → Secrets and variables → Actions, and add:
 
    To enable, add them in your Slack app settings under "Slash Commands"
 
-## PR Health Scoring
+## 📊 How It Works
+
+### PR Health Scoring
 
 The PR Health Score (0-100) is calculated based on:
 
@@ -162,7 +222,7 @@ The PR Health Score (0-100) is calculated based on:
   - PRs with unresolved comments > 24 hours: -10 points each
   - PRs with no activity for 48+ hours: -15 points each
 
-## Anomaly Detection
+### Anomaly Detection
 
 The system automatically detects:
 
@@ -172,7 +232,7 @@ The system automatically detects:
 - Sprint velocity < 60% with < 3 days remaining
 - More than 3 blockers active simultaneously
 
-## Daily Summary Format
+### Daily Summary Format
 
 The daily summary includes:
 
@@ -181,6 +241,30 @@ The daily summary includes:
 - PR summary (open, draft, merged, average age)
 - Action items (critical issues, blockers)
 - Top issues list
+
+## 💡 Use Cases
+
+- **Engineering Managers**: Get visibility into team productivity and sprint health
+- **Tech Leads**: Identify bottlenecks and blockers early
+- **Development Teams**: Stay informed about PR status and sprint progress
+- **DevOps Teams**: Monitor CI/CD health and deployment readiness
+- **Product Teams**: Track sprint velocity and completion rates
+
+## 🎯 Example Output
+
+```
+🚀 Sprint Health Report - Day 5/10
+📊 Overall Health: 78/100 🟡
+
+✅ Completed: 23 story points
+🔄 In Progress: 15 story points
+⚠️ At Risk: 8 story points
+
+🔴 ACTION NEEDED:
+• 3 PRs pending review > 3 days
+• 2 tickets blocked
+• CI failing on PR #456
+```
 
 ## Development
 
@@ -248,11 +332,54 @@ The app includes rate limiting delays between repository fetches. If you hit rat
 - Ensure the bot has `chat:write` scope
 - Check Slack app logs for errors
 
-## License
+## 🤝 Contributing
 
-MIT
+Contributions are welcome! Here's how you can help:
 
-## Contributing
+1. **Report bugs** by opening an issue
+2. **Suggest features** via issue discussions
+3. **Submit pull requests** for improvements
+4. **Improve documentation** - every bit helps!
 
-Contributions welcome! Please open an issue or pull request.
+### Development Setup
+
+```bash
+# Clone the repository
+git clone https://github.com/yksanjo/sprint-sync-dashboard.git
+cd sprint-sync-dashboard
+
+# Install dependencies
+npm install
+
+# Build the project
+npm run build
+
+# Run in development mode
+npm run dev
+```
+
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- Built with [TypeScript](https://www.typescriptlang.org/)
+- Uses [Slack Bolt](https://slack.dev/bolt-js/) for Slack integration
+- Powered by [GitHub GraphQL API](https://docs.github.com/en/graphql)
+- Inspired by the need for better sprint visibility
+
+## ⭐ Star History
+
+If you find this project useful, please consider giving it a star! ⭐
+
+---
+
+<div align="center">
+
+**Made with ❤️ for development teams**
+
+[Report Bug](https://github.com/yksanjo/sprint-sync-dashboard/issues) • [Request Feature](https://github.com/yksanjo/sprint-sync-dashboard/issues) • [Documentation](README.md)
+
+</div>
 
