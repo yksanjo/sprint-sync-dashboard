@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  sprint-sync:
+    build: .
+    container_name: sprint-sync-dashboard
+    restart: unless-stopped
+    environment:
+      # GitHub Configuration
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
+      - GITHUB_ORG=${GITHUB_ORG}
+      - GITHUB_REPOS=${GITHUB_REPOS}
+      
+      # Jira Configuration (optional)
+      - JIRA_URL=${JIRA_URL}
+      - JIRA_EMAIL=${JIRA_EMAIL}
+      - JIRA_API_TOKEN=${JIRA_API_TOKEN}
+      - JIRA_PROJECT_KEY=${JIRA_PROJECT_KEY}
+      
+      # Linear Configuration (optional)
+      - LINEAR_API_KEY=${LINEAR_API_KEY}
+      - LINEAR_TEAM_ID=${LINEAR_TEAM_ID}
+      
+      # Slack Configuration
+      - SLACK_BOT_TOKEN=${SLACK_BOT_TOKEN}
+      - SLACK_SIGNING_SECRET=${SLACK_SIGNING_SECRET}
+      - SLACK_CHANNEL_ID=${SLACK_CHANNEL_ID}
+      
+      # Application Configuration
+      - TIMEZONE=${TIMEZONE:-America/New_York}
+      - SPRINT_LENGTH_DAYS=${SPRINT_LENGTH_DAYS:-10}
+      - ALERT_THRESHOLD_DAYS=${ALERT_THRESHOLD_DAYS:-3}
+    env_file:
+      - .env
+    # Uncomment if you want to run on a schedule
+    # For scheduled runs, use cron or GitHub Actions instead
+    # command: node dist/index.js
+

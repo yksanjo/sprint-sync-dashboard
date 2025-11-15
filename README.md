@@ -79,7 +79,7 @@
 
 ## 🚀 Quick Start
 
-### Option 1: GitHub Actions (Recommended)
+### Option 1: GitHub Actions (Recommended - Zero Hosting)
 
 1. **Fork or clone this repository**
 2. **Add secrets** to your repository (Settings → Secrets and variables → Actions):
@@ -88,7 +88,21 @@
    - `JIRA_*` or `LINEAR_*` (optional)
 3. **The workflow runs daily at 9 AM** - that's it! 🎉
 
-### Option 2: Local Development
+### Option 2: Docker (Self-Hosted)
+
+```bash
+git clone https://github.com/yksanjo/sprint-sync-dashboard.git
+cd sprint-sync-dashboard
+cp env.example .env
+# Edit .env with your credentials
+docker-compose up -d
+```
+
+### Option 3: Cloud Hosting (Railway/Render)
+
+See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed deployment instructions.
+
+### Option 4: Local Development
 
 See [QUICKSTART.md](QUICKSTART.md) for detailed local setup instructions.
 

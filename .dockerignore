@@ -1,0 +1,15 @@
+node_modules
+dist
+.git
+.github
+.env
+*.log
+.DS_Store
+coverage
+*.tsbuildinfo
+README.md
+QUICKSTART.md
+PROMOTION.md
+SHIPPING.md
+tests
+
