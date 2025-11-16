@@ -66,12 +66,29 @@ if (existsSync(webPath)) {
   });
 }
 
-app.listen(PORT, () => {
+// Error handling for unhandled rejections
+process.on('unhandledRejection', (error) => {
+  console.error('Unhandled Rejection:', error);
+});
+
+process.on('uncaughtException', (error) => {
+  console.error('Uncaught Exception:', error);
+  process.exit(1);
+});
+
+// Start server
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`📊 API: http://localhost:${PORT}/api`);
-  if (process.env.NODE_ENV === 'production') {
-    console.log(`🌐 Web UI: http://localhost:${PORT}`);
+  console.log(`📊 API: http://0.0.0.0:${PORT}/api`);
+  console.log(`🌐 Web UI: http://0.0.0.0:${PORT}`);
+  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`Database URL: ${process.env.DATABASE_URL ? 'Set' : 'Not set'}`);
+}).on('error', (error: any) => {
+  console.error('Server error:', error);
+  if (error.code === 'EADDRINUSE') {
+    console.error(`Port ${PORT} is already in use`);
   }
+  process.exit(1);
 });
 
 export default app;
