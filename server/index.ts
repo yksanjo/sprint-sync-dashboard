@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { existsSync } from 'fs';
 import authRoutes from './routes/auth.js';
 import configRoutes from './routes/config.js';
 import subscriptionRoutes from './routes/subscription.js';
@@ -46,7 +47,6 @@ const webPath = path.join(__dirname, '../web/dist');
 console.log('Web path:', webPath);
 
 // Check if web dist exists
-import { existsSync } from 'fs';
 if (existsSync(webPath)) {
   app.use(express.static(webPath));
   
