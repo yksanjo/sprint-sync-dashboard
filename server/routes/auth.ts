@@ -164,6 +164,22 @@ router.post('/login', async (req: Request, res: Response) => {
 
 // Debug endpoint - check database status
 router.get('/debug', async (_req: Request, res: Response) => {
+  // Check if DATABASE_URL is set and not dummy
+  const isDummyDatabase = !process.env.DATABASE_URL || process.env.DATABASE_URL.includes('dummy:dummy@dummy');
+  
+  if (isDummyDatabase) {
+    return res.status(500).json({
+      status: 'error',
+      database: 'not_configured',
+      error: 'DATABASE_URL is not set or is a dummy value',
+      hasDatabaseUrl: false,
+      databaseUrlPrefix: 'not set',
+      suggestion: 'Go to Railway → Your Service → Variables tab → Check if DATABASE_URL exists. If not, add PostgreSQL database: + New → Database → Add PostgreSQL',
+      nodeEnv: process.env.NODE_ENV,
+      timestamp: new Date().toISOString(),
+    });
+  }
+
   try {
     // Test database connection
     await prisma.$queryRaw`SELECT 1`;
@@ -171,23 +187,16 @@ router.get('/debug', async (_req: Request, res: Response) => {
     // Check if User table exists
     const userCount = await prisma.user.count();
     
-    // Test if we can create a user (without actually creating)
-    const testEmail = `test-${Date.now()}@test.com`;
-    const canCreate = await prisma.user.findUnique({
-      where: { email: testEmail },
-    }).then(() => true).catch(() => false);
-    
     res.json({
       status: 'ok',
       database: 'connected',
       tables: 'exists',
       userCount,
-      canCreateUsers: canCreate !== false,
       hasJwtSecret: !!process.env.JWT_SECRET,
       jwtSecretLength: process.env.JWT_SECRET?.length || 0,
       nodeEnv: process.env.NODE_ENV,
-      hasDatabaseUrl: !!process.env.DATABASE_URL,
-      databaseUrlPrefix: process.env.DATABASE_URL?.substring(0, 12) || 'not set',
+      hasDatabaseUrl: true,
+      databaseUrlPrefix: process.env.DATABASE_URL?.substring(0, 20) + '...' || 'not set',
       timestamp: new Date().toISOString(),
     });
   } catch (error: any) {
@@ -201,9 +210,10 @@ router.get('/debug', async (_req: Request, res: Response) => {
       jwtSecretLength: process.env.JWT_SECRET?.length || 0,
       nodeEnv: process.env.NODE_ENV,
       hasDatabaseUrl: !!process.env.DATABASE_URL,
-      databaseUrlPrefix: process.env.DATABASE_URL?.substring(0, 12) || 'not set',
+      databaseUrlPrefix: process.env.DATABASE_URL?.substring(0, 20) + '...' || 'not set',
+      isDummyDatabase,
       suggestion: error?.code === 'P1001' 
-        ? 'Add PostgreSQL database in Railway: + New → Database → Add PostgreSQL'
+        ? 'Database connection failed. Check if PostgreSQL service is running in Railway and linked to your app service.'
         : error?.code === 'P2021' || error?.message?.includes('table') || error?.message?.includes('does not exist') || error?.message?.includes('relation')
         ? 'Run migrations: npx prisma migrate deploy (or check if migrations ran on startup)'
         : error?.code === 'P1017'
