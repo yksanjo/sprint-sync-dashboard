@@ -39,7 +39,6 @@ export default function Register({ setToken }: RegisterProps) {
       navigate('/dashboard');
     } catch (err: any) {
       const errorMsg = err.response?.data?.error;
-      const errorDetails = err.response?.data?.details;
       
       // Show more helpful error messages
       if (errorMsg) {
