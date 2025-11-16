@@ -19,6 +19,16 @@ const loginSchema = z.object({
 
 // Register
 router.post('/register', async (req: Request, res: Response) => {
+  // Check if DATABASE_URL is set
+  if (!process.env.DATABASE_URL) {
+    res.status(503).json({ 
+      error: 'Database not configured',
+      message: 'DATABASE_URL environment variable is not set',
+      suggestion: 'Go to Railway → + New → Database → Add PostgreSQL, then redeploy'
+    });
+    return;
+  }
+
   try {
     const data = registerSchema.parse(req.body);
     
@@ -100,6 +110,16 @@ router.post('/register', async (req: Request, res: Response) => {
 
 // Login
 router.post('/login', async (req: Request, res: Response) => {
+  // Check if DATABASE_URL is set
+  if (!process.env.DATABASE_URL) {
+    res.status(503).json({ 
+      error: 'Database not configured',
+      message: 'DATABASE_URL environment variable is not set',
+      suggestion: 'Go to Railway → + New → Database → Add PostgreSQL, then redeploy'
+    });
+    return;
+  }
+
   try {
     const data = loginSchema.parse(req.body);
 

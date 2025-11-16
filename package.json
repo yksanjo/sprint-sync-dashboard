@@ -7,7 +7,7 @@
   "scripts": {
     "build": "tsc && npm run build:web",
     "build:web": "cd web && npm ci && npm run build || (echo 'Web build failed!' && exit 1)",
-    "start": "if [ -z \"$DATABASE_URL\" ]; then echo '⚠️  DATABASE_URL not set! Add PostgreSQL database in Railway.'; exit 1; fi && npx prisma migrate deploy && node dist/server/index.js",
+    "start": "if [ -z \"$DATABASE_URL\" ]; then echo '⚠️  DATABASE_URL not set!'; echo '📝 To fix: Go to Railway → + New → Database → Add PostgreSQL'; echo '🚀 Starting server anyway (some features may not work)...'; node dist/server/index.js; else npx prisma migrate deploy && node dist/server/index.js; fi",
     "start:worker": "node dist/index.js",
     "dev": "tsx src/server/index.ts",
     "dev:worker": "tsx src/index.ts",
