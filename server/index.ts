@@ -39,7 +39,11 @@ app.post('/api/worker/run', async (_req, res) => {
 
 // Health check
 app.get('/api/health', (_req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+  res.json({ 
+    status: 'ok', 
+    timestamp: new Date().toISOString(),
+    hasDatabaseUrl: !!process.env.DATABASE_URL && !process.env.DATABASE_URL.includes('dummy'),
+  });
 });
 
 // Serve static files (web UI)
