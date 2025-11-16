@@ -142,13 +142,24 @@ router.get('/debug', async (_req: Request, res: Response) => {
     // Check if User table exists
     const userCount = await prisma.user.count();
     
+    // Test if we can create a user (without actually creating)
+    const testEmail = `test-${Date.now()}@test.com`;
+    const canCreate = await prisma.user.findUnique({
+      where: { email: testEmail },
+    }).then(() => true).catch(() => false);
+    
     res.json({
       status: 'ok',
       database: 'connected',
       tables: 'exists',
       userCount,
+      canCreateUsers: canCreate !== false,
       hasJwtSecret: !!process.env.JWT_SECRET,
+      jwtSecretLength: process.env.JWT_SECRET?.length || 0,
       nodeEnv: process.env.NODE_ENV,
+      hasDatabaseUrl: !!process.env.DATABASE_URL,
+      databaseUrlPrefix: process.env.DATABASE_URL?.substring(0, 12) || 'not set',
+      timestamp: new Date().toISOString(),
     });
   } catch (error: any) {
     res.status(500).json({
@@ -156,13 +167,20 @@ router.get('/debug', async (_req: Request, res: Response) => {
       database: 'disconnected',
       error: error?.message,
       code: error?.code,
+      meta: error?.meta,
       hasJwtSecret: !!process.env.JWT_SECRET,
+      jwtSecretLength: process.env.JWT_SECRET?.length || 0,
       nodeEnv: process.env.NODE_ENV,
+      hasDatabaseUrl: !!process.env.DATABASE_URL,
+      databaseUrlPrefix: process.env.DATABASE_URL?.substring(0, 12) || 'not set',
       suggestion: error?.code === 'P1001' 
         ? 'Add PostgreSQL database in Railway: + New → Database → Add PostgreSQL'
-        : error?.message?.includes('table') || error?.message?.includes('does not exist')
-        ? 'Run migrations: npx prisma migrate deploy'
-        : 'Check Railway logs for details',
+        : error?.code === 'P2021' || error?.message?.includes('table') || error?.message?.includes('does not exist') || error?.message?.includes('relation')
+        ? 'Run migrations: npx prisma migrate deploy (or check if migrations ran on startup)'
+        : error?.code === 'P1017'
+        ? 'Database connection closed. Check if database service is running in Railway.'
+        : `Error code: ${error?.code || 'unknown'}. Check Railway logs for details.`,
+      timestamp: new Date().toISOString(),
     });
   }
 });
