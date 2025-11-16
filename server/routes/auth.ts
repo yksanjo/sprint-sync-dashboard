@@ -163,12 +163,12 @@ router.post('/login', async (req: Request, res: Response) => {
 });
 
 // Debug endpoint - check database status
-router.get('/debug', async (_req: Request, res: Response) => {
+router.get('/debug', async (_req: Request, res: Response): Promise<void> => {
   // Check if DATABASE_URL is set and not dummy
   const isDummyDatabase = !process.env.DATABASE_URL || process.env.DATABASE_URL.includes('dummy:dummy@dummy');
   
   if (isDummyDatabase) {
-    return res.status(500).json({
+    res.status(500).json({
       status: 'error',
       database: 'not_configured',
       error: 'DATABASE_URL is not set or is a dummy value',
@@ -178,6 +178,7 @@ router.get('/debug', async (_req: Request, res: Response) => {
       nodeEnv: process.env.NODE_ENV,
       timestamp: new Date().toISOString(),
     });
+    return;
   }
 
   try {
