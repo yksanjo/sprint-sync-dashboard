@@ -6,20 +6,67 @@
 ![Node.js](https://img.shields.io/badge/Node.js-20+-green?logo=node.js)
 ![License](https://img.shields.io/badge/License-MIT-yellow)
 ![GitHub Actions](https://img.shields.io/badge/GitHub%20Actions-Enabled-2088FF?logo=github-actions)
+![Railway](https://img.shields.io/badge/Deployed%20on-Railway-0B0D0E?logo=railway&logoColor=white)
+![Status](https://img.shields.io/badge/Status-Production%20Ready-success)
 
-**A developer productivity tool that aggregates sprint health metrics across GitHub, Jira/Linear, and Slack**
+**A modern developer productivity tool that aggregates sprint health metrics across GitHub, Jira/Linear, and Slack**
 
-[Features](#-features) • [Quick Start](#-quick-start) • [Documentation](#-documentation) • [Contributing](#-contributing)
+[🌐 Live Demo](#-live-demo) • [Features](#-features) • [Quick Start](#-quick-start) • [Documentation](#-documentation) • [Contributing](#-contributing)
 
 </div>
 
 ---
 
+## 🎯 Live Demo
+
+<div align="center">
+
+### ✨ **Try it now - Zero setup required!**
+
+[![🚀 Try Live Demo](https://img.shields.io/badge/🚀_Try_Live_Demo-6366f1?style=for-the-badge&logo=railway&logoColor=white)](https://sprint-sync-dashboard-production.up.railway.app)
+
+**Live at:** `https://sprint-sync-dashboard-production.up.railway.app`
+
+*Replace with your actual Railway URL after deployment*
+
+</div>
+
+### 📸 Screenshots
+
+<div align="center">
+
+#### 🎨 Modern Dashboard UI
+![Dashboard Preview](https://via.placeholder.com/800x450/667eea/ffffff?text=Sprint+Sync+Dashboard+-+Modern+UI+with+Glassmorphism)
+
+*Glassmorphism design with purple/blue gradient theme*
+
+#### 📊 Stats Overview
+![Stats Cards](https://via.placeholder.com/800x300/764ba2/ffffff?text=Stats+Cards+-+Key+Metrics+at+a+Glance)
+
+*Real-time metrics: Configurations, Active Syncs, Monitored Repositories*
+
+#### ⚙️ Configuration Management
+![Config Management](https://via.placeholder.com/800x450/f093fb/ffffff?text=Configuration+Management+-+Easy+Setup)
+
+*Simple interface to manage GitHub, Jira/Linear, and Slack integrations*
+
+</div>
+
+> **💡 Tip:** After deploying to Railway, replace the placeholder images above with actual screenshots of your dashboard!
+
+---
+
 > **Keep your team on track** with automated daily summaries, real-time alerts, and interactive Slack commands. Monitor PR health, sprint velocity, and detect anomalies before they become blockers.
 
-![Sprint Sync Dashboard](https://img.shields.io/badge/Status-Production%20Ready-success)
-
 ## ✨ Features
+
+### 🎨 Modern UI/UX
+- **Glassmorphism design** with backdrop blur effects
+- **Purple/blue gradient theme** for a premium look
+- **Smooth animations** and micro-interactions
+- **Responsive design** - works on all devices
+- **Toast notifications** for user feedback
+- **Loading skeletons** for better perceived performance
 
 ### 📊 PR Health Scoring
 - **Automated health scores (0-100)** based on PR age, reviews, CI/CD status, and activity
@@ -53,6 +100,12 @@
 - **Linear** GraphQL API support
 - Auto-detects which project management tool is configured
 
+### 💳 SaaS Features
+- **User authentication** with JWT
+- **Multi-user support** with per-user configurations
+- **Subscription plans** (Free, Pro, Team) - ready for Stripe integration
+- **Database-backed** with PostgreSQL and Prisma ORM
+
 ## Architecture
 
 ```
@@ -79,18 +132,28 @@
 
 ## 🚀 Quick Start
 
-### Option 1: Hosted SaaS (Recommended - Zero Setup!) ⭐
+### Option 1: Hosted SaaS on Railway (Recommended - Zero Setup!) ⭐
 
 **Deploy to Railway in 5 minutes:**
 
-1. **Click "Deploy on Railway"** button below
-2. **Add PostgreSQL database** in Railway
-3. **Set environment variables** (see [RAILWAY_DEPLOY.md](RAILWAY_DEPLOY.md))
-4. **Visit your app** and sign up!
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template?template=https://github.com/yksanjo/sprint-sync-dashboard)
 
-[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template)
+**Steps:**
+
+1. **Click the "Deploy on Railway" button above** (or [use this link](https://railway.app/new/template?template=https://github.com/yksanjo/sprint-sync-dashboard))
+2. **Add PostgreSQL database** in Railway:
+   - Click "+ New" → "Database" → "Add PostgreSQL"
+   - Railway will automatically set `DATABASE_URL`
+3. **Set environment variables** (see [RAILWAY_DEPLOY.md](RAILWAY_DEPLOY.md)):
+   - `JWT_SECRET` - Generate a random string
+   - `FRONTEND_URL` - Your Railway app URL
+   - `NODE_ENV=production`
+4. **Visit your app** and sign up!
+5. **Create your first configuration** with your GitHub, Jira/Linear, and Slack credentials
 
 **Cost:** Free tier available! See [COST_ANALYSIS.md](COST_ANALYSIS.md)
+
+**📖 Detailed Railway Setup:** See [RAILWAY_DEPLOY.md](RAILWAY_DEPLOY.md) or [QUICK_DEPLOY.md](QUICK_DEPLOY.md)
 
 ### Option 2: GitHub Actions (Self-Hosted)
 
@@ -327,6 +390,16 @@ sprint-sync-dashboard/
 │   ├── config/
 │   │   └── index.ts                # Environment config
 │   └── index.ts                    # Main entry point
+├── server/
+│   ├── routes/                     # API routes
+│   ├── middleware/                 # Auth middleware
+│   └── db/                         # Database setup
+├── web/
+│   └── src/                        # React frontend
+│       ├── components/             # UI components
+│       └── pages/                  # Page components
+├── prisma/
+│   └── schema.prisma               # Database schema
 ├── package.json
 ├── tsconfig.json
 └── README.md
@@ -354,6 +427,12 @@ The app includes rate limiting delays between repository fetches. If you hit rat
 - Check that `SLACK_CHANNEL_ID` is correct (use channel ID, not name)
 - Ensure the bot has `chat:write` scope
 - Check Slack app logs for errors
+
+### Railway Deployment Issues
+
+- **Database not connecting?** See [RAILWAY_DATABASE_SETUP.md](RAILWAY_DATABASE_SETUP.md)
+- **Build failing?** Check [RAILWAY_DEPLOY.md](RAILWAY_DEPLOY.md)
+- **Registration not working?** See [FIX_DATABASE_URL.md](FIX_DATABASE_URL.md)
 
 ## 🤝 Contributing
 
@@ -390,6 +469,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Built with [TypeScript](https://www.typescriptlang.org/)
 - Uses [Slack Bolt](https://slack.dev/bolt-js/) for Slack integration
 - Powered by [GitHub GraphQL API](https://docs.github.com/en/graphql)
+- Deployed on [Railway](https://railway.app)
+- UI built with [React](https://react.dev/) and [Vite](https://vitejs.dev/)
+- Database managed with [Prisma](https://www.prisma.io/)
 - Inspired by the need for better sprint visibility
 
 ## ⭐ Star History
@@ -402,7 +484,6 @@ If you find this project useful, please consider giving it a star! ⭐
 
 **Made with ❤️ for development teams**
 
-[Report Bug](https://github.com/yksanjo/sprint-sync-dashboard/issues) • [Request Feature](https://github.com/yksanjo/sprint-sync-dashboard/issues) • [Documentation](README.md)
+[🌐 Live Demo](https://sprint-sync-dashboard-production.up.railway.app) • [Report Bug](https://github.com/yksanjo/sprint-sync-dashboard/issues) • [Request Feature](https://github.com/yksanjo/sprint-sync-dashboard/issues) • [Documentation](README.md)
 
 </div>
-
