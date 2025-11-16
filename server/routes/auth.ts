@@ -79,14 +79,21 @@ router.post('/register', async (req: Request, res: Response) => {
       res.status(500).json({ error: 'Database connection failed. Please check DATABASE_URL.' });
       return;
     }
-    if (error?.message?.includes('table') || error?.message?.includes('does not exist')) {
-      res.status(500).json({ error: 'Database tables not found. Please run migrations: npx prisma migrate deploy' });
+    if (error?.message?.includes('table') || error?.message?.includes('does not exist') || error?.message?.includes('relation') || error?.code === 'P2021') {
+      res.status(500).json({ 
+        error: 'Database tables not found. Migrations need to run.',
+        suggestion: 'Migrations should run automatically on startup. Check Railway logs for migration errors.',
+        code: error?.code || 'MIGRATION_ERROR'
+      });
       return;
     }
     
+    // Always show error details in production for debugging
     res.status(500).json({ 
       error: 'Registration failed',
-      details: process.env.NODE_ENV === 'development' ? error?.message : undefined
+      message: error?.message || 'Unknown error',
+      code: error?.code || 'UNKNOWN',
+      details: error?.message
     });
   }
 });
