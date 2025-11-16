@@ -20,13 +20,11 @@ COPY . .
 # Build TypeScript and web UI
 RUN npm run build
 
-# Remove source files and dev dependencies, but keep generated Prisma client
-RUN rm -rf src server web/src tsconfig.json prisma/schema.prisma
+# Remove source files and dev dependencies, but keep Prisma schema and generated client
+RUN rm -rf src server web/src tsconfig.json
 # Remove dev dependencies but keep production deps (including @prisma/client)
+# The generated Prisma client in node_modules/@prisma/client will be preserved
 RUN npm prune --production
-
-# Regenerate Prisma client for production (needed after prune)
-RUN npx prisma generate
 
 # Create non-root user
 RUN addgroup -g 1001 -S nodejs && \
