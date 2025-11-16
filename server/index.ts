@@ -43,8 +43,10 @@ app.get('/api/health', (_req, res) => {
 });
 
 // Serve static files (web UI)
-const webPath = path.join(__dirname, '../web/dist');
+// __dirname is dist/server, so we need to go up two levels to reach web/dist
+const webPath = path.join(__dirname, '../../web/dist');
 console.log('Web path:', webPath);
+console.log('Web path exists:', existsSync(webPath));
 
 // Check if web dist exists
 if (existsSync(webPath)) {

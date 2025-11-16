@@ -23,8 +23,12 @@ COPY . .
 # Build TypeScript and web UI
 RUN npm run build
 
-# Remove source files and dev dependencies, but keep Prisma schema and generated client
-RUN rm -rf src server web/src tsconfig.json
+# Verify web build completed
+RUN ls -la web/dist || echo "WARNING: web/dist not found!"
+
+# Remove source files and dev dependencies, but keep Prisma schema, generated client, and web/dist
+RUN rm -rf src server web/src web/node_modules tsconfig.json
+# Keep web/dist for serving static files
 # Remove dev dependencies but keep production deps (including @prisma/client)
 # The generated Prisma client in node_modules/@prisma/client will be preserved
 RUN npm prune --production
