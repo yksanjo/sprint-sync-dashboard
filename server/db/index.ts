@@ -15,37 +15,43 @@ if (!process.env.DATABASE_URL) {
   console.error('');
 }
 
-// Only create Prisma client if DATABASE_URL is set
-// This prevents Prisma from throwing errors during initialization
+// Create Prisma client with error handling
+// Prisma will validate DATABASE_URL at initialization, so we need to catch errors
 let prisma: PrismaClient;
 
-if (process.env.DATABASE_URL) {
+try {
   prisma = new PrismaClient({
     log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
   });
 
-  // Test database connection on startup
-  prisma.$connect()
-    .then(() => {
-      console.log('✅ Database connected successfully');
-    })
-    .catch((error) => {
-      console.error('❌ Database connection failed:', error);
-      console.error('DATABASE_URL:', process.env.DATABASE_URL ? 'Set' : 'Not set');
-      // Don't exit - let the app start and handle errors gracefully
-    });
-} else {
-  // Create a dummy Prisma client that will fail gracefully
-  // This allows the app to start even without DATABASE_URL
-  prisma = new PrismaClient({
-    datasources: {
-      db: {
-        url: 'postgresql://dummy:dummy@dummy:5432/dummy',
-      },
-    },
-    log: [],
-  });
-  console.warn('⚠️  Prisma client created in dummy mode - DATABASE_URL not set');
+  // Only test connection if DATABASE_URL is set
+  if (process.env.DATABASE_URL) {
+    prisma.$connect()
+      .then(() => {
+        console.log('✅ Database connected successfully');
+      })
+      .catch((error) => {
+        console.error('❌ Database connection failed:', error);
+        console.error('DATABASE_URL:', process.env.DATABASE_URL ? 'Set' : 'Not set');
+        // Don't exit - let the app start and handle errors gracefully
+      });
+  }
+} catch (error: any) {
+  // If Prisma initialization fails (e.g., missing DATABASE_URL), create a stub
+  console.error('⚠️  Prisma client initialization failed:', error?.message);
+  console.error('⚠️  Database features will not work until DATABASE_URL is set.');
+  
+  // Create a minimal stub that will throw helpful errors when used
+  prisma = {
+    $connect: async () => { throw new Error('DATABASE_URL not set'); },
+    $disconnect: async () => {},
+    $queryRaw: async () => { throw new Error('DATABASE_URL not set'); },
+    user: {
+      findUnique: async () => { throw new Error('DATABASE_URL not set'); },
+      create: async () => { throw new Error('DATABASE_URL not set'); },
+      count: async () => { throw new Error('DATABASE_URL not set'); },
+    } as any,
+  } as any;
 }
 
 export default prisma;
