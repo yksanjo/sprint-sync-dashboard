@@ -19,8 +19,9 @@ const loginSchema = z.object({
 
 // Register
 router.post('/register', async (req: Request, res: Response) => {
-  // Check if DATABASE_URL is set
-  if (!process.env.DATABASE_URL) {
+  // Check if DATABASE_URL is set and not a dummy value
+  const isDummyDatabase = !process.env.DATABASE_URL || process.env.DATABASE_URL.includes('dummy:dummy@dummy');
+  if (isDummyDatabase) {
     res.status(503).json({ 
       error: 'Database not configured',
       message: 'DATABASE_URL environment variable is not set',
@@ -110,8 +111,9 @@ router.post('/register', async (req: Request, res: Response) => {
 
 // Login
 router.post('/login', async (req: Request, res: Response) => {
-  // Check if DATABASE_URL is set
-  if (!process.env.DATABASE_URL) {
+  // Check if DATABASE_URL is set and not a dummy value
+  const isDummyDatabase = !process.env.DATABASE_URL || process.env.DATABASE_URL.includes('dummy:dummy@dummy');
+  if (isDummyDatabase) {
     res.status(503).json({ 
       error: 'Database not configured',
       message: 'DATABASE_URL environment variable is not set',

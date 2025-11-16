@@ -1,7 +1,9 @@
 import { PrismaClient } from '@prisma/client';
 
-// Check if DATABASE_URL is set
-if (!process.env.DATABASE_URL) {
+// Check if DATABASE_URL is set and not a dummy value
+const isDummyDatabase = !process.env.DATABASE_URL || process.env.DATABASE_URL.includes('dummy:dummy@dummy');
+
+if (isDummyDatabase) {
   console.error('');
   console.error('❌ DATABASE_URL environment variable is not set!');
   console.error('');
@@ -24,8 +26,8 @@ try {
     log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
   });
 
-  // Only test connection if DATABASE_URL is set
-  if (process.env.DATABASE_URL) {
+  // Only test connection if DATABASE_URL is set and not dummy
+  if (!isDummyDatabase) {
     prisma.$connect()
       .then(() => {
         console.log('✅ Database connected successfully');
