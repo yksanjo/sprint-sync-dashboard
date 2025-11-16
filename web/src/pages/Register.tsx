@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
@@ -12,7 +12,15 @@ export default function Register({ setToken }: RegisterProps) {
   const [name, setName] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [debugInfo, setDebugInfo] = useState<any>(null);
   const navigate = useNavigate();
+
+  // Check database status on mount
+  useEffect(() => {
+    axios.get('/api/auth/debug')
+      .then(res => setDebugInfo(res.data))
+      .catch(() => setDebugInfo({ status: 'error', message: 'Could not check database status' }));
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,7 +38,24 @@ export default function Register({ setToken }: RegisterProps) {
       setToken(response.data.token);
       navigate('/dashboard');
     } catch (err: any) {
-      setError(err.response?.data?.error || 'Registration failed');
+      const errorMsg = err.response?.data?.error;
+      const errorDetails = err.response?.data?.details;
+      
+      // Show more helpful error messages
+      if (errorMsg) {
+        if (typeof errorMsg === 'string') {
+          setError(errorMsg);
+        } else if (Array.isArray(errorMsg)) {
+          setError(errorMsg.map((e: any) => e.message || e).join(', '));
+        } else {
+          setError('Registration failed. Check the error details below.');
+        }
+      } else {
+        setError(err.message || 'Registration failed. Please check your connection and try again.');
+      }
+      
+      // Log full error for debugging
+      console.error('Registration error:', err.response?.data || err);
     } finally {
       setLoading(false);
     }
@@ -44,7 +69,45 @@ export default function Register({ setToken }: RegisterProps) {
         </h1>
         <h2 style={{ marginBottom: '24px', textAlign: 'center' }}>Register</h2>
 
-        {error && <div className="error">{error}</div>}
+        {/* Database Status Check */}
+        {debugInfo && debugInfo.status === 'error' && (
+          <div style={{ 
+            padding: '12px', 
+            marginBottom: '16px', 
+            backgroundColor: '#fff3cd', 
+            border: '1px solid #ffc107',
+            borderRadius: '4px',
+            fontSize: '14px'
+          }}>
+            <strong>⚠️ Database Issue Detected:</strong>
+            <p style={{ margin: '8px 0 0 0' }}>{debugInfo.suggestion || debugInfo.error || 'Database not connected'}</p>
+            <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: '#666' }}>
+              Quick fix: Go to Railway → + New → Database → Add PostgreSQL
+            </p>
+          </div>
+        )}
+
+        {error && (
+          <div className="error" style={{ 
+            padding: '12px', 
+            marginBottom: '16px',
+            whiteSpace: 'pre-wrap',
+            wordBreak: 'break-word'
+          }}>
+            <strong>❌ Error:</strong> {error}
+            {error.includes('Database') && (
+              <div style={{ marginTop: '8px', fontSize: '12px' }}>
+                <p>💡 Quick Fix:</p>
+                <ol style={{ margin: '4px 0', paddingLeft: '20px' }}>
+                  <li>Go to Railway Dashboard</li>
+                  <li>Click "+ New" → "Database" → "Add PostgreSQL"</li>
+                  <li>Wait for database to be created</li>
+                  <li>Redeploy your service</li>
+                </ol>
+              </div>
+            )}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
@@ -94,4 +157,6 @@ export default function Register({ setToken }: RegisterProps) {
     </div>
   );
 }
+
+
 

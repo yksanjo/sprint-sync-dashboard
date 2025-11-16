@@ -337,3 +337,5 @@ You can run this **completely free** (no domain) or **almost free** (with domain
 
 **Bottom line:** You can start for **$0-12/year** and scale costs as you grow! 🎉
 
+
+

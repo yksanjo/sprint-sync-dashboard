@@ -133,6 +133,40 @@ router.post('/login', async (req: Request, res: Response) => {
   }
 });
 
+// Debug endpoint - check database status
+router.get('/debug', async (_req: Request, res: Response) => {
+  try {
+    // Test database connection
+    await prisma.$queryRaw`SELECT 1`;
+    
+    // Check if User table exists
+    const userCount = await prisma.user.count();
+    
+    res.json({
+      status: 'ok',
+      database: 'connected',
+      tables: 'exists',
+      userCount,
+      hasJwtSecret: !!process.env.JWT_SECRET,
+      nodeEnv: process.env.NODE_ENV,
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      status: 'error',
+      database: 'disconnected',
+      error: error?.message,
+      code: error?.code,
+      hasJwtSecret: !!process.env.JWT_SECRET,
+      nodeEnv: process.env.NODE_ENV,
+      suggestion: error?.code === 'P1001' 
+        ? 'Add PostgreSQL database in Railway: + New → Database → Add PostgreSQL'
+        : error?.message?.includes('table') || error?.message?.includes('does not exist')
+        ? 'Run migrations: npx prisma migrate deploy'
+        : 'Check Railway logs for details',
+    });
+  }
+});
+
 // Get current user
 router.get('/me', async (req: AuthRequest, res: Response) => {
   try {
