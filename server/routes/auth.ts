@@ -58,13 +58,36 @@ router.post('/register', async (req: Request, res: Response) => {
       user,
       token,
     });
-  } catch (error) {
+  } catch (error: any) {
     if (error instanceof z.ZodError) {
       res.status(400).json({ error: error.errors });
       return;
     }
     console.error('Registration error:', error);
-    res.status(500).json({ error: 'Registration failed' });
+    console.error('Error details:', {
+      message: error?.message,
+      code: error?.code,
+      meta: error?.meta,
+    });
+    
+    // Provide more specific error messages
+    if (error?.code === 'P2002') {
+      res.status(400).json({ error: 'Email already registered' });
+      return;
+    }
+    if (error?.code === 'P1001') {
+      res.status(500).json({ error: 'Database connection failed. Please check DATABASE_URL.' });
+      return;
+    }
+    if (error?.message?.includes('table') || error?.message?.includes('does not exist')) {
+      res.status(500).json({ error: 'Database tables not found. Please run migrations: npx prisma migrate deploy' });
+      return;
+    }
+    
+    res.status(500).json({ 
+      error: 'Registration failed',
+      details: process.env.NODE_ENV === 'development' ? error?.message : undefined
+    });
   }
 });
 
