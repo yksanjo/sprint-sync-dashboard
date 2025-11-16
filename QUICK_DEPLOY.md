@@ -9,12 +9,15 @@ Get your SaaS live in 5 minutes with Railway.
 3. **Select** `yksanjo/sprint-sync-dashboard`
 4. **Railway will start building** automatically
 
-## Step 2: Add Database (1 minute)
+## Step 2: Add Database (1 minute) ⚠️ REQUIRED!
 
-1. In your Railway project, click **"+ New"**
+**Your app will crash without this step!**
+
+1. In your Railway project, click **"+ New"** (top right)
 2. Select **"Database"** → **"Add PostgreSQL"**
 3. Railway creates the database automatically
 4. The `DATABASE_URL` is automatically set as an environment variable
+5. **Verify**: Go to your service → Variables tab → Check `DATABASE_URL` exists
 
 ## Step 3: Set Environment Variables (1 minute)
 
