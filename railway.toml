@@ -1,5 +1,6 @@
 [build]
 builder = "NIXPACKS"
+buildCommand = "npm ci && npx prisma generate && npm run build"
 
 [deploy]
 startCommand = "npm start"
@@ -12,4 +13,3 @@ restartPolicyMaxRetries = 10
 # STRIPE_SECRET_KEY - Stripe secret key (optional)
 # STRIPE_WEBHOOK_SECRET - Stripe webhook secret (optional)
 # FRONTEND_URL - Your frontend URL (e.g., https://sprintsync.io)
-
