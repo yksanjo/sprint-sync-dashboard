@@ -24,7 +24,11 @@ COPY . .
 RUN npm run build
 
 # Verify web build completed
-RUN ls -la web/dist || echo "WARNING: web/dist not found!"
+RUN echo "=== Verifying web build ===" && \
+    ls -la web/dist && \
+    ls -la web/dist/assets && \
+    cat web/dist/index.html | head -5 && \
+    echo "=== Web build verified ==="
 
 # Remove source files and dev dependencies, but keep Prisma schema, generated client, and web/dist
 RUN rm -rf src server web/src web/node_modules tsconfig.json

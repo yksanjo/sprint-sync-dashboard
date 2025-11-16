@@ -48,22 +48,34 @@ const webPath = path.join(__dirname, '../../web/dist');
 console.log('Web path:', webPath);
 console.log('Web path exists:', existsSync(webPath));
 
-// Check if web dist exists
+// Check if web dist exists and serve static files
 if (existsSync(webPath)) {
+  console.log('✅ Serving web UI from:', webPath);
   app.use(express.static(webPath));
   
   // Catch-all handler: send back React app for any non-API routes
+  // This must be LAST, after all API routes
   app.get('*', (_req, res) => {
-    res.sendFile(path.join(webPath, 'index.html'));
+    const indexPath = path.join(webPath, 'index.html');
+    if (existsSync(indexPath)) {
+      res.sendFile(indexPath);
+    } else {
+      res.status(404).json({ error: 'Web UI not found' });
+    }
   });
 } else {
-  // Fallback if web dist doesn't exist yet
+  console.warn('⚠️  Web UI not found at:', webPath);
+  console.warn('⚠️  Serving API-only mode');
+  
+  // Fallback: API-only mode
   app.get('/', (_req, res) => {
     res.json({ 
       message: 'Sprint Sync Dashboard API',
       status: 'running',
-      web: 'Web UI not built yet. Run: npm run build:web',
-      api: '/api/health'
+      web: 'Web UI not built. Check build logs.',
+      api: '/api/health',
+      webPath: webPath,
+      webPathExists: false
     });
   });
 }
