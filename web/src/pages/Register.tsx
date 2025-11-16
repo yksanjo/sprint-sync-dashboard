@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { showToast } from '../components/ToastContainer';
+import ToastContainer from '../components/ToastContainer';
 
 interface RegisterProps {
   setToken: (token: string) => void;
@@ -36,6 +38,7 @@ export default function Register({ setToken }: RegisterProps) {
 
       localStorage.setItem('token', response.data.token);
       setToken(response.data.token);
+      showToast('Registration successful!', 'success');
       navigate('/dashboard');
     } catch (err: any) {
       const errorMsg = err.response?.data?.error;
@@ -61,26 +64,28 @@ export default function Register({ setToken }: RegisterProps) {
   };
 
   return (
-    <div className="container" style={{ maxWidth: '400px', marginTop: '100px' }}>
-      <div className="card">
-        <h1 style={{ marginBottom: '24px', textAlign: 'center' }}>
-          Sprint Sync Dashboard
-        </h1>
-        <h2 style={{ marginBottom: '24px', textAlign: 'center' }}>Register</h2>
+    <>
+      <ToastContainer />
+      <div className="container" style={{ 
+        maxWidth: '440px', 
+        marginTop: '10vh',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: '80vh'
+      }}>
+        <div className="card fade-in" style={{ width: '100%' }}>
+          <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+            <h1 style={{ marginBottom: '0.5rem' }}>Sprint Sync</h1>
+            <p style={{ color: 'var(--text-secondary)' }}>Create your account to get started</p>
+          </div>
 
         {/* Database Status Check */}
         {debugInfo && debugInfo.status === 'error' && (
-          <div style={{ 
-            padding: '12px', 
-            marginBottom: '16px', 
-            backgroundColor: '#fff3cd', 
-            border: '1px solid #ffc107',
-            borderRadius: '4px',
-            fontSize: '14px'
-          }}>
+          <div className="error" style={{ marginBottom: '1rem' }}>
             <strong>⚠️ Database Issue Detected:</strong>
             <p style={{ margin: '8px 0 0 0' }}>{debugInfo.suggestion || debugInfo.error || 'Database not connected'}</p>
-            <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: '#666' }}>
+            <p style={{ margin: '4px 0 0 0', fontSize: '12px' }}>
               Quick fix: Go to Railway → + New → Database → Add PostgreSQL
             </p>
           </div>
@@ -88,8 +93,7 @@ export default function Register({ setToken }: RegisterProps) {
 
         {error && (
           <div className="error" style={{ 
-            padding: '12px', 
-            marginBottom: '16px',
+            marginBottom: '1rem',
             whiteSpace: 'pre-wrap',
             wordBreak: 'break-word'
           }}>
@@ -142,18 +146,22 @@ export default function Register({ setToken }: RegisterProps) {
           <button
             type="submit"
             className="btn btn-primary"
-            style={{ width: '100%' }}
+            style={{ width: '100%', marginTop: '0.5rem' }}
             disabled={loading}
           >
-            {loading ? 'Registering...' : 'Register'}
+            {loading ? 'Registering...' : 'Create Account'}
           </button>
         </form>
 
-        <p style={{ marginTop: '20px', textAlign: 'center' }}>
-          Already have an account? <Link to="/login">Login</Link>
+        <p style={{ marginTop: '1.5rem', textAlign: 'center', color: 'var(--text-secondary)' }}>
+          Already have an account?{' '}
+          <Link to="/login" style={{ color: 'var(--primary-light)', textDecoration: 'none' }}>
+            Login
+          </Link>
         </p>
       </div>
     </div>
+    </>
   );
 }
 

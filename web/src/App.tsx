@@ -5,6 +5,7 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import ConfigForm from './pages/ConfigForm';
 import Pricing from './pages/Pricing';
+import ToastContainer from './components/ToastContainer';
 
 function App() {
   const [token, setToken] = useState<string | null>(
@@ -18,6 +19,7 @@ function App() {
 
   return (
     <BrowserRouter>
+      <ToastContainer />
       <Routes>
         <Route
           path="/login"

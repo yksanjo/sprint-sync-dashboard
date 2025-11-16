@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import LoadingSkeleton from '../components/LoadingSkeleton';
+import StatsCard from '../components/StatsCard';
+import ToastContainer, { showToast } from '../components/ToastContainer';
 
 interface DashboardProps {
   token: string;
@@ -41,6 +44,7 @@ export default function Dashboard({ token }: DashboardProps) {
       setUser(userRes.data.user);
     } catch (error) {
       console.error('Failed to fetch data:', error);
+      showToast('Failed to load dashboard data', 'error');
     } finally {
       setLoading(false);
     }
@@ -48,95 +52,152 @@ export default function Dashboard({ token }: DashboardProps) {
 
   const handleLogout = () => {
     localStorage.removeItem('token');
+    showToast('Logged out successfully', 'success');
     navigate('/login');
   };
 
   if (loading) {
-    return <div className="container">Loading...</div>;
+    return (
+      <div className="main-content">
+        <LoadingSkeleton />
+      </div>
+    );
   }
 
+  const activeConfigs = configs.filter(c => c.isActive).length;
+  const totalRepos = configs.reduce((sum, c) => sum + c.githubRepos.split(',').length, 0);
+
   return (
-    <div className="container">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-        <h1>Sprint Sync Dashboard</h1>
-        <div>
-          <span style={{ marginRight: '20px' }}>Plan: {user?.plan || 'FREE'}</span>
-          <Link to="/pricing" className="btn btn-secondary" style={{ marginRight: '10px' }}>
-            Upgrade
-          </Link>
-          <button onClick={handleLogout} className="btn btn-secondary">
-            Logout
-          </button>
+    <>
+      <ToastContainer />
+      <div className="main-content fade-in">
+        {/* Header */}
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'center', 
+          marginBottom: '2rem' 
+        }}>
+          <div>
+            <h1>Sprint Sync Dashboard</h1>
+            <p style={{ color: 'var(--text-secondary)', marginTop: '0.5rem' }}>
+              Welcome back, {user?.name || user?.email}!
+            </p>
+          </div>
+          <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+            <span className="badge badge-info" style={{ textTransform: 'none' }}>
+              {user?.plan || 'FREE'} Plan
+            </span>
+            {user?.plan === 'FREE' && (
+              <Link to="/pricing" className="btn btn-primary">
+                Upgrade
+              </Link>
+            )}
+            <button onClick={handleLogout} className="btn btn-ghost">
+              Logout
+            </button>
+          </div>
         </div>
-      </div>
 
-      <div className="card">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-          <h2>Your Configurations</h2>
-          <Link to="/config/new" className="btn btn-primary">
-            + New Configuration
-          </Link>
+        {/* Stats Cards */}
+        <div className="stats-grid">
+          <StatsCard
+            value={configs.length}
+            label="Total Configurations"
+            icon="⚙️"
+          />
+          <StatsCard
+            value={activeConfigs}
+            label="Active Configurations"
+            icon="✅"
+          />
+          <StatsCard
+            value={totalRepos}
+            label="Monitored Repositories"
+            icon="📦"
+          />
+          <StatsCard
+            value={configs.filter(c => c.lastRunAt).length}
+            label="Synced Configs"
+            icon="🔄"
+          />
         </div>
 
-        {configs.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '40px' }}>
-            <p style={{ marginBottom: '20px' }}>No configurations yet.</p>
+        {/* Configurations Card */}
+        <div className="card fade-in">
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            alignItems: 'center', 
+            marginBottom: '1.5rem' 
+          }}>
+            <h2>Your Configurations</h2>
             <Link to="/config/new" className="btn btn-primary">
-              Create Your First Configuration
+              + New Configuration
             </Link>
           </div>
-        ) : (
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead>
-              <tr style={{ borderBottom: '2px solid #ddd' }}>
-                <th style={{ padding: '12px', textAlign: 'left' }}>GitHub Org</th>
-                <th style={{ padding: '12px', textAlign: 'left' }}>Repositories</th>
-                <th style={{ padding: '12px', textAlign: 'left' }}>Status</th>
-                <th style={{ padding: '12px', textAlign: 'left' }}>Last Run</th>
-                <th style={{ padding: '12px', textAlign: 'left' }}>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {configs.map((config) => (
-                <tr key={config.id} style={{ borderBottom: '1px solid #eee' }}>
-                  <td style={{ padding: '12px' }}>{config.githubOrg}</td>
-                  <td style={{ padding: '12px' }}>{config.githubRepos}</td>
-                  <td style={{ padding: '12px' }}>
-                    <span
-                      style={{
-                        padding: '4px 8px',
-                        borderRadius: '4px',
-                        background: config.isActive ? '#28a745' : '#6c757d',
-                        color: 'white',
-                        fontSize: '12px',
-                      }}
-                    >
-                      {config.isActive ? 'Active' : 'Inactive'}
-                    </span>
-                  </td>
-                  <td style={{ padding: '12px' }}>
-                    {config.lastRunAt
-                      ? new Date(config.lastRunAt).toLocaleString()
-                      : 'Never'}
-                  </td>
-                  <td style={{ padding: '12px' }}>
-                    <Link
-                      to={`/config/${config.id}`}
-                      className="btn btn-secondary"
-                      style={{ padding: '6px 12px', fontSize: '14px' }}
-                    >
-                      Edit
-                    </Link>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+
+          {configs.length === 0 ? (
+            <div className="empty-state">
+              <div className="empty-state-icon">📋</div>
+              <h3 style={{ marginBottom: '0.5rem' }}>No configurations yet</h3>
+              <p style={{ marginBottom: '1.5rem', color: 'var(--text-secondary)' }}>
+                Create your first configuration to start syncing sprint data
+              </p>
+              <Link to="/config/new" className="btn btn-primary">
+                Create Your First Configuration
+              </Link>
+            </div>
+          ) : (
+            <div style={{ overflowX: 'auto' }}>
+              <table>
+                <thead>
+                  <tr>
+                    <th>GitHub Org</th>
+                    <th>Repositories</th>
+                    <th>Status</th>
+                    <th>Last Run</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {configs.map((config) => (
+                    <tr key={config.id}>
+                      <td>
+                        <strong>{config.githubOrg}</strong>
+                      </td>
+                      <td>
+                        <span style={{ color: 'var(--text-secondary)' }}>
+                          {config.githubRepos.split(',').length} repo{config.githubRepos.split(',').length !== 1 ? 's' : ''}
+                        </span>
+                      </td>
+                      <td>
+                        <span className={`badge ${config.isActive ? 'badge-success' : 'badge-warning'}`}>
+                          {config.isActive ? 'Active' : 'Inactive'}
+                        </span>
+                      </td>
+                      <td style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
+                        {config.lastRunAt
+                          ? new Date(config.lastRunAt).toLocaleString()
+                          : 'Never'}
+                      </td>
+                      <td>
+                        <Link
+                          to={`/config/${config.id}`}
+                          className="btn btn-secondary"
+                          style={{ padding: '0.5rem 1rem', fontSize: '0.875rem' }}
+                        >
+                          Edit
+                        </Link>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 }
-
-
-
