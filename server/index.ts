@@ -23,7 +23,7 @@ app.use('/api/configs', configRoutes);
 app.use('/api/subscription', subscriptionRoutes);
 
 // Worker endpoint (for manual triggers or cron)
-app.post('/api/worker/run', async (req, res) => {
+app.post('/api/worker/run', async (_req, res) => {
   try {
     // Import and run worker
     const { runWorker } = await import('../src/worker.js');
@@ -37,7 +37,7 @@ app.post('/api/worker/run', async (req, res) => {
 });
 
 // Health check
-app.get('/api/health', (req, res) => {
+app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
@@ -46,7 +46,7 @@ if (process.env.NODE_ENV === 'production') {
   const webPath = path.join(__dirname, '../web/dist');
   app.use(express.static(webPath));
   
-  app.get('*', (req, res) => {
+  app.get('*', (_req, res) => {
     res.sendFile(path.join(webPath, 'index.html'));
   });
 }

@@ -6,11 +6,11 @@ import { authenticateToken, AuthRequest } from '../middleware/auth.js';
 const router = Router();
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
-  apiVersion: '2024-06-20',
+  apiVersion: '2023-10-16',
 });
 
 // Get pricing plans
-router.get('/plans', (req, res: Response) => {
+router.get('/plans', (_req, res: Response) => {
   res.json({
     plans: [
       {

@@ -2,7 +2,6 @@
  * Worker process that runs sprint sync for all active configurations
  * This runs on a schedule (via cron or Railway cron jobs)
  */
-import { loadConfig } from './config/index.js';
 import { GitHubClient } from './integrations/github.js';
 import { JiraClient } from './integrations/jira.js';
 import { LinearClient } from './integrations/linear.js';

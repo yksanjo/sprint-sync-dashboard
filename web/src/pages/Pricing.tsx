@@ -4,7 +4,7 @@ import axios from 'axios';
 
 export default function Pricing() {
   const [plans, setPlans] = useState<any[]>([]);
-  const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
+  const [token] = useState<string | null>(localStorage.getItem('token'));
   const navigate = useNavigate();
 
   useEffect(() => {
