@@ -41,13 +41,28 @@ app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// Serve static files in production
-if (process.env.NODE_ENV === 'production') {
-  const webPath = path.join(__dirname, '../web/dist');
+// Serve static files (web UI)
+const webPath = path.join(__dirname, '../web/dist');
+console.log('Web path:', webPath);
+
+// Check if web dist exists
+import { existsSync } from 'fs';
+if (existsSync(webPath)) {
   app.use(express.static(webPath));
   
+  // Catch-all handler: send back React app for any non-API routes
   app.get('*', (_req, res) => {
     res.sendFile(path.join(webPath, 'index.html'));
+  });
+} else {
+  // Fallback if web dist doesn't exist yet
+  app.get('/', (_req, res) => {
+    res.json({ 
+      message: 'Sprint Sync Dashboard API',
+      status: 'running',
+      web: 'Web UI not built yet. Run: npm run build:web',
+      api: '/api/health'
+    });
   });
 }
 

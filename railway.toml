@@ -6,6 +6,12 @@ buildCommand = "npm ci && cd web && npm ci && cd .. && npx prisma generate && np
 startCommand = "npm start"
 restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 10
+environment = { NODE_ENV = "production" }
+
+[deploy]
+startCommand = "npm start"
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 10
 
 # Environment variables (set these in Railway dashboard)
 # DATABASE_URL - PostgreSQL connection string (Railway auto-provides)
